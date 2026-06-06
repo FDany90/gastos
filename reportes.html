@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GASTOS · Reportes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="reportes">
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main">
+      <div class="page-head">
+        <div><h1>Reportes</h1><p>Tu evolución mes a mes</p></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <label style="font-size:13px;color:var(--text-soft)">TC USD/ARS</label>
+          <input type="number" id="tcInput" style="width:110px" />
+          <button class="btn ghost" id="resetBtn">Reiniciar datos</button>
+        </div>
+      </div>
+
+      <div class="grid auto-cards" id="compCards" style="margin-bottom:18px"></div>
+
+      <div class="card" style="margin-bottom:18px">
+        <h3>Ingresos vs Gastos vs Ahorro · últimos 6 meses</h3>
+        <canvas id="trendChart" height="110"></canvas>
+      </div>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Comparativa: este mes vs anterior</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Concepto</th><th class="num">Mes pasado</th><th class="num">Este mes</th><th class="num">Δ</th></tr></thead>
+              <tbody id="compBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Destino del gasto · este mes</h3>
+          <canvas id="catPie" height="200"></canvas>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/format.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/gamification.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/reportes.js"></script>
+</body>
+</html>

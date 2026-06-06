@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Node (por si más adelante sumás tooling)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Variables de entorno (las credenciales de Supabase van en js/config.js, que es público por diseño)
+.env
+.env.local

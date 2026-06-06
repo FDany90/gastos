@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GASTOS · Gastos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="gastos">
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main">
+      <div class="page-head">
+        <div><h1>Gastos</h1><p>Registrá tus gastos fijos y variables</p></div>
+        <button class="btn" id="addBtn">+ Nuevo gasto</button>
+      </div>
+
+      <div class="grid cols-3" id="gastoStats" style="margin-bottom:18px"></div>
+
+      <div class="card" id="recCard" style="margin-bottom:18px"></div>
+
+      <div class="toolbar">
+        <div class="seg" id="segTipo">
+          <button data-v="todos" class="active">Todos</button>
+          <button data-v="fijo">Fijos</button>
+          <button data-v="variable">Variables</button>
+        </div>
+        <select id="filtroCat"></select>
+        <select id="filtroMoneda">
+          <option value="todos">Todas las monedas</option>
+          <option value="ARS">Pesos (ARS)</option>
+          <option value="USD">Dólares (USD)</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Tipo</th><th class="num">Monto</th><th></th></tr></thead>
+            <tbody id="gastoBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/format.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/gamification.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/gastos.js"></script>
+</body>
+</html>

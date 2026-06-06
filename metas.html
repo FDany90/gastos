@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GASTOS · Metas & Logros</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="metas">
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main">
+      <div class="page-head">
+        <div><h1>Metas & Logros</h1><p>Ponete objetivos, ganá XP y desbloqueá insignias</p></div>
+        <button class="btn" id="addMeta">+ Nueva meta</button>
+      </div>
+
+      <!-- progreso de nivel -->
+      <div class="card" id="levelPanel" style="margin-bottom:18px"></div>
+
+      <!-- metas -->
+      <h3 style="margin:6px 0 12px">🎯 Tus metas de ahorro</h3>
+      <div class="grid cols-2" id="metasGrid" style="margin-bottom:26px"></div>
+
+      <!-- logros -->
+      <h3 style="margin:6px 0 12px">🏅 Insignias <span id="logrosCount" style="color:var(--text-soft);font-weight:500"></span></h3>
+      <div class="badge-grid" id="badgeGrid"></div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/format.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/gamification.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/metas.js"></script>
+</body>
+</html>

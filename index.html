@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GASTOS · Balance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-page="dashboard">
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main">
+      <div class="page-head">
+        <div>
+          <h1>Hola 👋</h1>
+          <p id="subHead">Tu resumen financiero de hoy</p>
+        </div>
+        <button class="btn" onclick="Layout.quickAddGasto()">+ Cargar gasto</button>
+      </div>
+
+      <!-- tarjetas motivadoras -->
+      <div class="grid auto-cards" id="summaryCards" style="margin-bottom:18px"></div>
+
+      <!-- patrimonio -->
+      <div class="grid cols-3" id="statCards" style="margin-bottom:18px"></div>
+
+      <!-- disciplina + score -->
+      <div class="grid cols-2" style="margin-bottom:18px">
+        <div class="card">
+          <h3>🔥 Tu disciplina esta semana</h3>
+          <div class="week-dots" id="weekDots"></div>
+          <p id="disciplinaMsg" style="margin-top:14px;color:var(--text-soft)"></p>
+        </div>
+        <div class="card" style="display:flex;align-items:center;gap:20px">
+          <div id="scoreGauge"></div>
+          <div>
+            <h3 style="margin-bottom:4px">Salud financiera</h3>
+            <p style="color:var(--text-soft)" id="scoreMsg"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- gastos por categoría + fijo/variable -->
+      <div class="grid cols-2" style="margin-bottom:18px">
+        <div class="card">
+          <h3>Gastos por categoría · este mes</h3>
+          <div class="bar-cat" id="catBars"></div>
+        </div>
+        <div class="card">
+          <h3>Ingresos vs Gastos · este mes</h3>
+          <canvas id="ivgChart" height="170"></canvas>
+        </div>
+      </div>
+
+      <!-- movimientos recientes -->
+      <div class="card">
+        <h3>Movimientos recientes</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Detalle</th><th>Tipo</th><th class="num">Monto</th></tr></thead>
+            <tbody id="recentBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/format.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/gamification.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
