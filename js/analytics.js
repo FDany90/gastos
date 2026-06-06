@@ -189,6 +189,7 @@ const Analytics = (function () {
     toUSD, monthKey, thisMonth, prevMonth,
     gastosUSD, ingresosUSD, balancePorMoneda, criptoResumen, patrimonioUSD,
     gastosPorCategoria, fijoVsVariable, ahorroMes, tasaAhorro,
+    gastosPorMoneda, ingresosPorMoneda, ahorroPorMoneda, fijoVariablePorMoneda,
     comparativaMensual, pace, scoreSalud, serieMeses,
   };
 })();

@@ -22,6 +22,7 @@ const Store = (function () {
 
   let state = null;
   let userId = null;
+  let statsRowId = null; // dueño de la fila de stats compartida
   const listeners = [];
 
   function emit() { listeners.forEach((f) => f(state)); }
@@ -94,7 +95,8 @@ const Store = (function () {
       SB.from('ingresos').select('*').order('fecha', { ascending: false }),
       SB.from('inversiones').select('*').order('fecha', { ascending: false }),
       SB.from('metas').select('*').order('created_at', { ascending: true }),
-      SB.from('stats_usuario').select('*').eq('user_id', userId).maybeSingle(),
+      // stats COMPARTIDOS: tomamos la fila con más XP (la "principal"), no la de este dispositivo
+      SB.from('stats_usuario').select('*').order('xp', { ascending: false }).limit(1).maybeSingle(),
     ]);
 
     let stats = st.data;
@@ -103,6 +105,7 @@ const Store = (function () {
       const ins = await SB.from('stats_usuario').insert(def).select().single();
       stats = ins.data || def;
     }
+    statsRowId = stats.user_id || userId; // todas las pantallas escriben en esta misma fila
 
     let recData = [];
     try {
@@ -186,7 +189,7 @@ const Store = (function () {
   async function saveStats() {
     const s = state.stats;
     const { error } = await SB.from('stats_usuario').upsert({
-      user_id: userId,
+      user_id: statsRowId || userId,
       xp: s.xp, racha_max: s.rachaMax,
       dias_actividad: s.diasActividad, logros: s.logros, metas_cumplidas: s.metasCumplidas,
       tipo_cambio_usd: state.config.tipoCambioUSD,
@@ -351,13 +354,14 @@ const Store = (function () {
 
   /* ---------- Borrar todos mis datos ---------- */
   async function reset() {
+    const TODO = (q) => q.gte('created_at', '2000-01-01'); // filtro que matchea todas las filas
     // recurrentes primero (FK): si no, las instancias quedan referenciadas
-    await SB.from('recurrentes').delete().eq('user_id', userId);
+    await TODO(SB.from('recurrentes').delete());
     await Promise.all([
-      SB.from('gastos').delete().eq('user_id', userId),
-      SB.from('ingresos').delete().eq('user_id', userId),
-      SB.from('inversiones').delete().eq('user_id', userId),
-      SB.from('metas').delete().eq('user_id', userId),
+      TODO(SB.from('gastos').delete()),
+      TODO(SB.from('ingresos').delete()),
+      TODO(SB.from('inversiones').delete()),
+      TODO(SB.from('metas').delete()),
     ]);
     state.gastos = []; state.ingresos = []; state.inversiones = []; state.metas = []; state.recurrentes = [];
     state.stats = { xp: 0, rachaMax: 0, diasActividad: {}, logros: {}, metasCumplidas: {} };
