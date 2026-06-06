@@ -27,17 +27,25 @@
     });
   }
 
+  function dual(obj) {
+    const a = obj.ARS || 0, u = obj.USD || 0;
+    if (a && u) return { val: Format.money(a, 'ARS'), sub: '+ ' + Format.money(u, 'USD') };
+    if (u && !a) return { val: Format.money(u, 'USD'), sub: '' };
+    return { val: Format.money(a, 'ARS'), sub: '' };
+  }
+
   function renderStats() {
     const m = Analytics.thisMonth();
-    const total = Analytics.ingresosUSD(m);
-    const ahorro = Analytics.ahorroMes(m);
-    const tasa = Analytics.tasaAhorro(m);
-    const card = (icon, label, val, tone) =>
-      `<div class="card stat"><div class="label">${icon} ${label}</div><div class="value ${tone || ''}">${val}</div></div>`;
+    const ing = Analytics.ingresosPorMoneda(m);
+    const gas = Analytics.gastosPorMoneda(m);
+    const ah = Analytics.ahorroPorMoneda(m);
+    const card = (icon, label, d, tone) =>
+      `<div class="card stat"><div class="label">${icon} ${label}</div><div class="value ${tone || ''}">${d.val}</div>${d.sub ? `<div class="sub">${d.sub}</div>` : ''}</div>`;
+    const ahTone = (ah.ARS < 0 || ah.USD < 0) ? 'neg' : 'pos';
     document.getElementById('ingStats').innerHTML =
-      card('💰', 'Ingresos este mes', Format.usd(total)) +
-      card('🐷', 'Ahorro del mes', Format.usd(ahorro), ahorro >= 0 ? 'pos' : 'neg') +
-      card('📊', 'Tasa de ahorro', Format.pct(tasa, false), tasa >= 20 ? 'pos' : '');
+      card('💰', 'Ingresos este mes', dual(ing)) +
+      card('💸', 'Gastos este mes', dual(gas)) +
+      card('🐷', 'Ahorro del mes', dual(ah), ahTone);
   }
 
   function renderTable() {

@@ -29,17 +29,25 @@
     });
   }
 
+  // Muestra cada moneda en lo suyo: ARS como valor principal, USD como sub (o viceversa).
+  function dual(obj) {
+    const a = obj.ARS || 0, u = obj.USD || 0;
+    if (a && u) return { val: Format.money(a, 'ARS'), sub: '+ ' + Format.money(u, 'USD') };
+    if (u && !a) return { val: Format.money(u, 'USD'), sub: '' };
+    return { val: Format.money(a, 'ARS'), sub: '' };
+  }
+
   function renderStats() {
     const m = Analytics.thisMonth();
-    const fv = Analytics.fijoVsVariable(m);
-    const total = fv.fijo + fv.variable;
+    const fv = Analytics.fijoVariablePorMoneda(m);
+    const total = { ARS: (fv.fijo.ARS || 0) + (fv.variable.ARS || 0), USD: (fv.fijo.USD || 0) + (fv.variable.USD || 0) };
     const cont = document.getElementById('gastoStats');
-    const card = (icon, label, val, pill) =>
-      `<div class="card stat"><div class="label">${icon} ${label}</div><div class="value">${val}</div></div>`;
+    const card = (icon, label, d) =>
+      `<div class="card stat"><div class="label">${icon} ${label}</div><div class="value">${d.val}</div>${d.sub ? `<div class="sub">${d.sub}</div>` : ''}</div>`;
     cont.innerHTML =
-      card('🧾', 'Total este mes', Format.usd(total)) +
-      card('📌', 'Fijos', Format.usd(fv.fijo)) +
-      card('🎲', 'Variables', Format.usd(fv.variable));
+      card('🧾', 'Total este mes', dual(total)) +
+      card('📌', 'Fijos', dual(fv.fijo)) +
+      card('🎲', 'Variables', dual(fv.variable));
   }
 
   function renderFiltroCat() {

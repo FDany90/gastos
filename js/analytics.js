@@ -81,6 +81,30 @@ const Analytics = (function () {
     return { fijo: gastosUSD(month, { tipo: 'fijo' }), variable: gastosUSD(month, { tipo: 'variable' }) };
   }
 
+  /* ---- montos POR MONEDA (sin convertir): { ARS, USD } ---- */
+  function gastosPorMoneda(month, filtro = {}) {
+    const r = { ARS: 0, USD: 0 };
+    S().gastos
+      .filter((g) => (!month || monthKey(g.fecha) === month))
+      .filter((g) => (!filtro.tipo || g.tipo === filtro.tipo))
+      .forEach((g) => { r[g.moneda] = (r[g.moneda] || 0) + g.monto; });
+    return r;
+  }
+  function ingresosPorMoneda(month) {
+    const r = { ARS: 0, USD: 0 };
+    S().ingresos
+      .filter((i) => (!month || monthKey(i.fecha) === month))
+      .forEach((i) => { r[i.moneda] = (r[i.moneda] || 0) + i.monto; });
+    return r;
+  }
+  function ahorroPorMoneda(month) {
+    const ing = ingresosPorMoneda(month), gas = gastosPorMoneda(month);
+    return { ARS: (ing.ARS || 0) - (gas.ARS || 0), USD: (ing.USD || 0) - (gas.USD || 0) };
+  }
+  function fijoVariablePorMoneda(month) {
+    return { fijo: gastosPorMoneda(month, { tipo: 'fijo' }), variable: gastosPorMoneda(month, { tipo: 'variable' }) };
+  }
+
   /* ---- ahorro y tasa de ahorro ---- */
   function ahorroMes(month) { return ingresosUSD(month) - gastosUSD(month); }
   function tasaAhorro(month) {

@@ -1,15 +1,11 @@
 /* Utilidades de formato (moneda, fechas, fechas relativas) */
 const Format = (function () {
   function money(amount, moneda = 'USD') {
-    const locale = moneda === 'ARS' ? 'es-AR' : 'en-US';
-    try {
-      return new Intl.NumberFormat(locale, {
-        style: 'currency', currency: moneda,
-        minimumFractionDigits: 2, maximumFractionDigits: 2,
-      }).format(amount || 0);
-    } catch (e) {
-      return moneda + ' ' + Number(amount || 0).toFixed(2);
-    }
+    const n = Number(amount || 0);
+    // ARS -> "$ 1.234,56" (formato argentino)
+    if (moneda === 'ARS') return '$' + n.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // USD -> "US$1,234.56" (prefijo claro para no confundir con pesos)
+    return 'US$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
   function usd(a) { return money(a, 'USD'); }
   function crypto(qty) {

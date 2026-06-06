@@ -27,25 +27,23 @@
   }
 
   function renderStats() {
-    const pat = Analytics.patrimonioUSD();
+    const bal = Analytics.balancePorMoneda();
     const cr = Analytics.criptoResumen();
-    const bal = pat.balance;
     document.getElementById('statCards').innerHTML =
       statCard({
-        label: 'Patrimonio total', icon: '🏦', pill: 'var(--accent-soft)',
-        value: Format.usd(pat.total),
-        sub: `Efectivo ${Format.usd(pat.efectivoUSD)} + Cripto ${Format.usd(pat.cripto)}`,
+        label: 'Pesos (efectivo)', icon: '💵', pill: '#e8f1ff',
+        value: Format.money(bal.ARS, 'ARS'),
+        sub: 'Ingresos − gastos en ARS',
       }) +
       statCard({
-        label: 'Efectivo', icon: '💵', pill: 'var(--green-soft)',
-        value: `${Format.money(bal.USD, 'USD')}`,
-        sub: `+ ${Format.money(bal.ARS, 'ARS')} en pesos`,
+        label: 'Dólares (efectivo)', icon: '💵', pill: 'var(--green-soft)',
+        value: Format.money(bal.USD, 'USD'),
+        sub: 'Ingresos − gastos en USD',
       }) +
       statCard({
         label: 'Inversiones cripto', icon: '📈', pill: 'var(--amber-soft)',
         value: Format.usd(cr.actual),
         sub: `<span class="${cr.pl >= 0 ? 'pos' : 'neg'}">${cr.pl >= 0 ? '▲' : '▼'} ${Format.usd(Math.abs(cr.pl))} (${Format.pct(cr.plPct)})</span>`,
-        tone: '',
       });
   }
 

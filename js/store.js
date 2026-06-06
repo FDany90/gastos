@@ -41,13 +41,54 @@ const Store = (function () {
   const rowToMeta = (r) => ({ id: r.id, nombre: r.nombre, icono: r.icono, objetivo: Number(r.objetivo), actual: Number(r.actual), moneda: r.moneda, fechaLimite: r.fecha_limite });
   const metaToRow = (d) => ({ nombre: d.nombre, icono: d.icono || '🎯', objetivo: d.objetivo, actual: d.actual || 0, moneda: d.moneda, fecha_limite: d.fechaLimite || null });
 
+  /* ---------- caché local (stale-while-revalidate) ----------
+     Guarda lo último traído para dibujar al instante en la próxima
+     página, mientras se refresca contra Supabase en segundo plano. */
+  function cacheKey() { return 'gastosCache_' + (userId || 'anon'); }
+  function saveCache() {
+    if (!state) return;
+    try {
+      localStorage.setItem(cacheKey(), JSON.stringify({
+        config: state.config, gastos: state.gastos, ingresos: state.ingresos,
+        inversiones: state.inversiones, metas: state.metas, recurrentes: state.recurrentes, stats: state.stats,
+      }));
+    } catch (e) { /* almacenamiento lleno: ignorar */ }
+  }
+  function loadCache() {
+    try {
+      const raw = localStorage.getItem(cacheKey());
+      if (!raw) return null;
+      const c = JSON.parse(raw);
+      return {
+        config: c.config || { tipoCambioUSD: 1150, monedaPrincipal: 'USD' },
+        categoriasGasto: CATEGORIAS_GASTO, fuentesIngreso: FUENTES_INGRESO,
+        gastos: c.gastos || [], ingresos: c.ingresos || [], inversiones: c.inversiones || [],
+        metas: c.metas || [], recurrentes: c.recurrentes || [],
+        stats: c.stats || { xp: 0, rachaMax: 0, diasActividad: {}, logros: {}, metasCumplidas: {} },
+      };
+    } catch (e) { return null; }
+  }
+
   /* ---------- bootstrap ---------- */
   async function init() {
     if (state) return state;
-    const { data: { user } } = await SB.auth.getUser();
-    if (!user) throw new Error('Sin sesión');
-    userId = user.id;
+    // userId desde la sesión local (sin pegarle a la red); fallback a getUser
+    userId = (window.Auth && Auth.user() && Auth.user().id) || (((await SB.auth.getUser()).data.user) || {}).id;
+    if (!userId) throw new Error('Sin sesión');
 
+    const cached = loadCache();
+    if (cached) {
+      state = cached;                 // render INSTANTÁNEO con lo cacheado
+      fetchAll().then(() => { saveCache(); emit(); }).catch((e) => console.warn('refresh BD:', e.message));
+      return state;                   // (la BD se sincroniza por detrás)
+    }
+    await fetchAll();                  // primera vez: sí esperamos
+    saveCache();
+    return state;
+  }
+
+  // Trae todo de Supabase, arma el state y genera recurrentes faltantes.
+  async function fetchAll() {
     const [g, i, inv, m, st] = await Promise.all([
       SB.from('gastos').select('*').order('fecha', { ascending: false }),
       SB.from('ingresos').select('*').order('fecha', { ascending: false }),
@@ -63,7 +104,6 @@ const Store = (function () {
       stats = ins.data || def;
     }
 
-    // recurrentes: se cargan aparte y con tolerancia (por si falta correr la migración)
     let recData = [];
     try {
       const rc = await SB.from('recurrentes').select('*').order('created_at', { ascending: true });
@@ -90,7 +130,6 @@ const Store = (function () {
     };
 
     try { await generarRecurrentes(); } catch (e) { console.error('generarRecurrentes:', e); }
-    return state;
   }
 
   /* ---------- recurrentes: generación de instancias mensuales ---------- */
@@ -160,6 +199,7 @@ const Store = (function () {
     let nuevos = [];
     if (window.Gamification) nuevos = Gamification.evaluate(state);
     await saveStats();
+    saveCache();
     emit();
     if (!opts.silent && nuevos.length && window.UI) UI.celebrate(nuevos);
   }
@@ -169,6 +209,7 @@ const Store = (function () {
     let nuevos = [];
     if (window.Gamification) nuevos = Gamification.evaluate(state);
     if (nuevos.length) await saveStats();
+    saveCache();
     emit();
   }
 
